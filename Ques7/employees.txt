@@ -1,0 +1,7 @@
+1, Employee1, 67000.0
+2, Employee2, 55000.78
+3, Employee3, 120000.14
+4, Employee4, 135000.78
+5, Employee5, 115000.0
+6, Employee6, 94000.26
+7, Employee7, 82000.48
