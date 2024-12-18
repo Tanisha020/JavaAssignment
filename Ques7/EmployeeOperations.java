@@ -1,10 +1,10 @@
-// this java class contains methods to write employee data to a file and read employee data from 2 files simultaneously
+// This java class contains methods to write employee data to a file and read employee data from 2 files simultaneously
 import java.io.*;
 import java.util.*;
 
 public class EmployeeOperations {
 
-    //method to write employee data to a file
+    // Method to write employee data to a file
     public static void writeData(List<Employee> employees, String fileName) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             for (Employee employee : employees) {
@@ -20,13 +20,14 @@ public class EmployeeOperations {
 
     // Method to read employee data from two files using threads
     public static void readData(String file1, String file2) {
-        //creating runnable tasks
-        Runnable r1 = new EmployeeReaderTask(file1);
-        Runnable r2 = new EmployeeReaderTask(file2);
+        Object lock = new Object(); // lock for synchronization
+        boolean[] turn = {true};   // Flag: true for thread1, false for thread2
 
-        // creating threads
-        Thread t1 = new Thread(r1, "Employees1 ");
-        Thread t2 = new Thread(r2, "Employees2 ");
+        Runnable task1 = new FileReaderRunnable(file1, lock, turn, true); //reader 1 starts first
+        Runnable task2 = new FileReaderRunnable(file2, lock, turn, false); // reader 2 starts second
+
+        Thread t1 = new Thread(task1, "Employees1");
+        Thread t2 = new Thread(task2, "Employees2");
 
         t1.start();
         t2.start();
@@ -36,6 +37,47 @@ public class EmployeeOperations {
             t2.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    //Class for file reading tasks
+    private static class FileReaderRunnable implements Runnable {
+        private final String fileName;
+        private final Object lock;
+        private final boolean[] turn;
+        private final boolean isFirst;
+
+        public FileReaderRunnable(String fileName, Object lock, boolean[] turn, boolean isFirst) {
+            this.fileName = fileName;
+            this.lock = lock;
+            this.turn = turn;
+            this.isFirst = isFirst;
+        }
+
+        @Override
+        public void run() {
+            try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+                String line;
+                while (true) {
+                    synchronized (lock) {
+                        while (turn[0] != isFirst) {
+                            lock.wait(); // Wait for its turn
+                        }
+
+                        if ((line = reader.readLine()) == null) {
+                            turn[0] = !isFirst; // Allow the other thread to finish
+                            lock.notifyAll();
+                            break;
+                        }
+
+                        System.out.println(Thread.currentThread().getName() + ": " + line);
+                        turn[0] = !turn[0]; // Switch the turn
+                        lock.notifyAll();
+                    }
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
