@@ -14,7 +14,6 @@ JavaAssignment
 ├── Ques7/
 │ ├── Employee.java
 │ ├── EmployeeOperations.java
-│ ├── EmployeeReaderTask.java
 │ ├── Main.java
 │ ├── employees.txt
 │ ├── employees1.txt
@@ -36,8 +35,7 @@ Path: Ques6/
 ### Question 7: Employee Class with File Persistence and Multithreading  
 This solution focuses on creating an Employee class and performing file operations in a multithreaded environment.  
 - **Employee Class**: Includes id, name, and salary attributes, with necessary constructors, getters, setters, and an overridden toString() method.  
-- **Employee Operations**: Writing employee data to employees.txt in a structured format (handled in EmployeeOperations.java).  
-- **Multithreaded File Reading**: Reads alternate lines from employees1.txt and employees2.txt using threads (handled in EmployeeReaderTask.java and EmployeeOperations.java).  
+- **Employee Operations**: Writing employee data to employees.txt in a structured format. Also reads alternate lines from employees1.txt and employees2.txt using threads  (handled in EmployeeOperations.java).  
 - **Main Class**: For demonstration
 
 Path: Ques7/  
